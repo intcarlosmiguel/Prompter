@@ -44,37 +44,44 @@ O coração da ferramenta é a sua estrutura, que se baseia no seguinte acrônim
 
 Para colocar a aplicação em funcionamento localmente, siga estes passos:
 
+## 🚀 Como Executar o Projeto
+
 1.  **Clone o repositório:**
     ```bash
     git clone https://github.com/seu-usuario/seu-repositorio.git
     cd seu-repositorio
     ```
 
-2.  **Crie e ative um ambiente virtual (recomendado):**
+2.  **Execute o inicializador:**
+    
+    Para Windows:
     ```bash
-    # Para Windows
-    python -m venv venv
-    .\venv\Scripts\activate
-
-    # Para macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
+    # Apenas clique duas vezes no arquivo
+    start.bat
     ```
 
-3.  **Instale as dependências:**
+    Para Linux/Ubuntu:
     ```bash
-    pip install -r requirements.txt
+    # Dê permissão de execução
+    chmod +x start.sh
+    # Execute
+    ./start.sh
     ```
 
-4.  **(Opcional) Adicione arquivos de contexto:**
+3.  **(Opcional) Adicione arquivos de contexto:**
     Crie uma pasta chamada `files` na raiz do projeto e adicione arquivos `.txt`, `.py`, `.md`, etc. que você queira usar como contexto em seus prompts.
 
-5.  **Execute a aplicação:**
-    ```bash
-    python app.py
-    ```
+4.  Abra seu navegador e acesse `http://127.0.0.1:5000`.
 
-6.  Abra seu navegador e acesse `http://127.0.0.1:5000`.
+> **Nota**: Se preferir executar manualmente, você pode seguir os passos avançados abaixo:
+> 
+> 1. Crie um ambiente virtual: `python -m venv venv`
+> 2. Ative o ambiente: 
+>    - Windows: `.\venv\Scripts\activate`
+>    - Linux/Mac: `source venv/bin/activate`
+> 3. Instale dependências: `pip install -r requirements.txt`
+> 4. Execute: `python app.py`
+
 
 ## 📂 Estrutura do Projeto
 
