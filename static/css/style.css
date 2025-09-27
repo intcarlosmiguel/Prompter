@@ -1,13 +1,20 @@
-/* static/css/style.css */
+/* static/css/style.css - Tema "Deep Focus" */
 :root {
-    --primary-color: #005f73;
-    --secondary-color: #0a9396;
-    --background-color: #f4f7f6;
-    --card-background: #ffffff;
-    --text-color: #333;
-    --light-text-color: #666;
-    --border-color: #e0fbfc;
-    --danger-color: #dc3545;
+    /* PALETA DE CORES - TEMA ESCURO */
+    --background-color: #121826; /* Um azul noturno profundo, quase preto */
+    --card-background: #1C2438;   /* Uma superfície ligeiramente mais clara para os painéis */
+    --text-color: #E2E8F0;         /* Branco suave e legível com um toque de azul */
+    --light-text-color: #8D9BB0;   /* Cinza-azulado para texto secundário e placeholders */
+    --border-color: #2A3652;       /* Borda sutil para separar elementos */
+    --primary-action-bg: #38BDF8;  /* Azul ciano vibrante para ações primárias (Copiar) */
+    --primary-action-text: #0B1120;/* Texto escuro de alto contraste para o botão primário */
+    --save-action-bg: #10B981;     /* Verde para a ação de salvar */
+    --danger-action-bg: #F472B6;   /* Rosa/Magenta para a ação de perigo (Excluir) */
+    --accent-glow: rgba(56, 189, 248, 0.5); /* Efeito de brilho para inputs em foco */
+    --reset-border-color: #7E2D41;   /* Um vermelho escuro, cor de vinho, para a borda */
+    --reset-text-color: #F472B6;     /* O mesmo rosa/magenta, para consistência com os ícones de exclusão */
+    --reset-hover-bg: #9F284C;       /* Um vermelho mais sólido e vibrante para o hover */
+    --reset-hover-text: #FFFFFF;     /* Texto branco puro para o hover, para máximo contraste */
 }
 
 body {
@@ -16,6 +23,7 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     margin: 0;
+    transition: background-color 0.3s ease;
 }
 
 .container {
@@ -30,7 +38,7 @@ header {
 }
 
 header h1 {
-    color: var(--primary-color);
+    color: #FFFFFF; /* Título principal em branco puro para destaque */
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
@@ -44,211 +52,158 @@ header h1 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    align-items: start;
 }
 
 .form-section, .preview-section {
     background-color: var(--card-background);
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-radius: 12px; /* Bordas mais arredondadas para um visual mais moderno */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); /* Sombra mais sutil para profundidade */
+}
+
+.preview-section {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
 }
 
 h2 {
-    color: var(--primary-color);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 0.5rem;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
     margin-top: 0;
+    font-weight: 600;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
-}
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 1rem; }
+.help-text { font-size: 0.85rem; color: var(--light-text-color); margin: -0.25rem 0 0.75rem 0; }
 
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
-    font-size: 1.1rem;
-}
-
-.help-text {
-    font-size: 0.85rem;
-    color: var(--light-text-color);
-    margin: 0 0 0.5rem 0;
-}
-
-textarea.prompt-input, .persona-inputs input.prompt-input {
+textarea.prompt-input, 
+.persona-inputs input.prompt-input,
+.preset-controls .preset-select {
     width: 100%;
     box-sizing: border-box;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     font-size: 1rem;
-    resize: vertical;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+textarea.prompt-input { resize: vertical; }
 
-
-/* PASSO 2: Fazer o contêiner do prompt crescer para ocupar o espaço livre */
-.prompt-preview-wrapper {
-    flex-grow: 1; /* A mágica acontece aqui: este elemento vai se esticar */
-    min-height: 0; /* Um truque para garantir que o flexbox se comporte bem com overflow */
+textarea.prompt-input::placeholder, 
+.persona-inputs input.prompt-input::placeholder {
+    color: var(--light-text-color);
+    opacity: 0.8;
 }
 
-/* PROMPT PREVIEW - CORREÇÃO DE OVERFLOW HORIZONTAL */
+textarea.prompt-input:focus, 
+.persona-inputs input.prompt-input:focus,
+.preset-controls .preset-select:focus {
+    outline: none;
+    border-color: var(--primary-action-bg);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.prompt-preview-wrapper { flex-grow: 1; min-height: 0; }
+
 pre#final-prompt {
-    background-color: #282c34;
-    color: #abb2bf;
+    background-color: #000000; /* Preto puro para o máximo contraste do código/texto final */
+    color: #D1D5DB;
     padding: 1rem;
-    border-radius: 5px;
+    border-radius: 8px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
-    
-    /* Regras de altura e overflow */
-    height: 100%; /* Ocupa toda a altura do .prompt-preview-wrapper */
-    overflow-y: auto; /* Adiciona scroll vertical se o conteúdo for muito grande */
+    height: 100%;
+    overflow-y: auto;
     font-size: 0.95rem;
-    box-sizing: border-box; /* Garante que o padding não cause overflow */
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
 }
 
+/* --- Botões Reimaginados --- */
+
+/* Botão de Ação Primária */
 #copy-button {
     border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1rem;
     transition: all 0.2s ease-in-out;
-    background-color: var(--secondary-color);
-    color: white;
+    background-color: var(--primary-action-bg);
+    color: var(--primary-action-text);
     width: 100%;
     margin-top: 1rem;
 }
+#copy-button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
 
-#copy-button:hover {
-    background-color: #007bff;
-}
-
+/* Botão Secundário */
 #reset-button {
-    background-color: #6c757d;
-    color: white;
+    background-color: transparent;
+    color: var(--reset-text-color); /* Aplicando a cor do texto */
+    border: 1px solid var(--reset-border-color); /* Aplicando a cor da borda */
+    
     width: 100%;
     margin-top: 1rem;
-    border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 #reset-button:hover {
-    background-color: #5a6268;
+    background-color: var(--reset-hover-bg); /* Aplicando o fundo no hover */
+    color: var(--reset-hover-text);          /* Aplicando a cor do texto no hover */
+    border-color: var(--reset-hover-bg);     /* Borda e fundo se tornam uma cor só */
 }
 
-.persona-inputs {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.persona-inputs span {
-    font-style: italic;
-    color: var(--light-text-color);
-}
-
-.file-selector {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 1rem;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-}
-
-.file-checkbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.file-checkbox input[type="checkbox"] {
-    margin-right: 0.75rem;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-}
-
-.file-checkbox label {
-    font-weight: normal;
-    font-size: 0.95rem;
-    cursor: pointer;
-}
-
-.no-files-msg {
-    color: var(--light-text-color);
-    font-style: italic;
-}
-
-.form-group-inline {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.form-group-inline input {
-    margin: 0;
-}
-
-.form-group-inline label {
-    margin: 0;
-    font-weight: normal;
-}
-
-/* ESTILOS PARA PRESETS GRANULARES */
-.preset-controls {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.preset-controls .preset-select {
-    flex-grow: 1;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
-}
+/* --- Controles de Preset --- */
+.preset-controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.preset-controls .preset-select { flex-grow: 1; }
 
 .preset-controls button {
     padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    background-color: #f0f0f0;
-    font-weight: bold;
+    font-weight: 600;
+    color: var(--primary-action-text);
+    transition: opacity 0.2s ease;
 }
+.preset-controls button:hover { opacity: 0.85; }
 
-.preset-controls .save-preset-btn {
-    background-color: #e0fbfc;
-    color: var(--primary-color);
-    border-color: var(--secondary-color);
-}
+.preset-controls .save-preset-btn { background-color: var(--save-action-bg); }
+.preset-controls .delete-preset-btn { background-color: var(--danger-action-bg); }
 
-.preset-controls .delete-preset-btn {
-    background-color: #ffebee;
-    color: var(--danger-color);
-    border-color: #f44336;
-}
+/* --- Elementos Diversos --- */
+.persona-inputs { display: flex; align-items: center; gap: 0.75rem; }
+.persona-inputs span { font-style: italic; color: var(--light-text-color); }
+.file-selector { border: 1px dashed var(--border-color); border-radius: 8px; padding: 1rem; max-height: 200px; overflow-y: auto; background-color: rgba(0,0,0,0.1); }
+.file-checkbox { display: flex; align-items: center; margin-bottom: 0.5rem; }
+.file-checkbox input[type="checkbox"] { margin-right: 0.75rem; width: 16px; height: 16px; cursor: pointer; }
+.file-checkbox label { font-weight: normal; font-size: 0.95rem; cursor: pointer; }
+.no-files-msg { color: var(--light-text-color); font-style: italic; }
+.form-group-inline { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; }
+.form-group-inline input { margin: 0; }
+.form-group-inline label { margin: 0; font-weight: normal; }
 
-/* TOAST NOTIFICATION */
+/* --- Notificação Toast --- */
 .toast {
     visibility: hidden;
     min-width: 250px;
-    background-color: #333;
-    color: #fff;
+    background-color: #2A3652; /* Fundo alinhado com o tema */
+    color: var(--text-color);
     text-align: center;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 16px;
     position: fixed;
     z-index: 1;
@@ -256,16 +211,13 @@ pre#final-prompt {
     transform: translateX(-50%);
     bottom: 30px;
     opacity: 0;
-    transition: opacity 0.5s, visibility 0.5s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    transition: opacity 0.5s, visibility 0.5s, transform 0.5s;
 }
+.toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-.toast.show {
-    visibility: visible;
-    opacity: 1;
-}
-
+/* --- Responsividade --- */
 @media (max-width: 900px) {
-    .main-content {
-        grid-template-columns: 1fr;
-    }
+    .main-content { grid-template-columns: 1fr; }
 }

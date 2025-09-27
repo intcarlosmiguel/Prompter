@@ -13,10 +13,10 @@
             <h1>Assistente de Prompt</h1>
             <p class="subtitle">Construa prompts de alta qualidade com a estratégia P.R.O.M.P.T.</p>
         </header>
-
         <div class="main-content">
             <div class="form-section">
                 <h2>1. Preencha os Componentes</h2>
+                <button id="reset-button" type="button">Limpar Tudo</button>
                 <div class="form-group form-group-inline">
                          <input type="checkbox" id="add-opening-checkbox">
                          <label for="add-opening-checkbox">Adicionar frase de abertura (continuidade)</label>
@@ -63,15 +63,15 @@
                     
                     
                 </form>
-                <button id="reset-button" type="button">Limpar Tudo</button>
+                
             </div>
 
             <div class="preview-section">
                 <h2>2. Visualize e Copie seu Prompt</h2>
+                <button id="copy-button" title="Copiar para a área de transferência">Copiar Prompt Final</button>
                 <div class="prompt-preview-wrapper">
                     <pre id="final-prompt">Seu prompt aparecerá aqui...</pre>
                 </div>
-                <button id="copy-button" title="Copiar para a área de transferência">Copiar Prompt Final</button>
             </div>
         </div>
     </div>
