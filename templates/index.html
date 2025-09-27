@@ -1,0 +1,89 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente de Prompt - Estratégia P.R.O.M.P.T.</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Assistente de Prompt</h1>
+            <p class="subtitle">Construa prompts de alta qualidade com a estratégia P.R.O.M.P.T.</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>1. Preencha os Componentes</h2>
+                <div class="form-group form-group-inline">
+                         <input type="checkbox" id="add-opening-checkbox">
+                         <label for="add-opening-checkbox">Adicionar frase de abertura (continuidade)</label>
+                    </div>
+                <form id="prompt-form">
+                    {% for item in structure %}
+                    <div class="form-group">
+                        <label for="{{ item.id }}">{{ item.label }}</label>
+                        <p class="help-text">{{ item.help_text }}</p>
+
+                        {% if item.id in ['resultado', 'orquestracao', 'perimetro', 'tom'] %}
+                            <div class="preset-controls" data-field="{{ item.id }}">
+                                <select class="preset-select">
+                                    <option value="">Carregar preset...</option>
+                                </select>
+                                <button type="button" class="save-preset-btn" title="Salvar conteúdo atual como preset">Salvar</button>
+                                <button type="button" class="delete-preset-btn" title="Excluir preset selecionado">Excluir</button>
+                            </div>
+                        {% endif %}
+
+                        {% if item.type == 'template_persona' %}
+                            <div class="persona-inputs">
+                                <input type="text" id="persona-input-1" class="prompt-input" placeholder="{{ item.placeholders[0] }}">
+                                <span>e</span>
+                                <input type="text" id="persona-input-2" class="prompt-input" placeholder="{{ item.placeholders[1] }}">
+                            </div>
+                            <input type="hidden" id="persona" data-template="{{ item.template }}">
+                        {% elif item.type == 'file_selector' %}
+                            <div id="file-selector-container" class="file-selector">
+                                {% for file in files %}
+                                <div class="file-checkbox">
+                                    <input type="checkbox" id="file-{{ loop.index }}" name="context_files" value="{{ file.filename }}" class="prompt-input">
+                                    <label for="file-{{ loop.index }}">{{ file.filename }}</label>
+                                </div>
+                                {% else %}
+                                <p class="no-files-msg">Nenhum arquivo encontrado na pasta <code>/files</code>.</p>
+                                {% endfor %}
+                            </div>
+                        {% elif item.type == 'textarea' %}
+                            <textarea id="{{ item.id }}" rows="3" placeholder="{{ item.placeholder }}" class="prompt-input"></textarea>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    
+                </form>
+                <button id="reset-button" type="button">Limpar Tudo</button>
+            </div>
+
+            <div class="preview-section">
+                <h2>2. Visualize e Copie seu Prompt</h2>
+                <div class="prompt-preview-wrapper">
+                    <pre id="final-prompt">Seu prompt aparecerá aqui...</pre>
+                </div>
+                <button id="copy-button" title="Copiar para a área de transferência">Copiar Prompt Final</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast">
+        ✅ Prompt copiado para a área de transferência!
+    </div>
+
+    <script>
+        const fileData = {{ files | tojson }};
+        let initialPresets = {{ presets | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
