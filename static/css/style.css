@@ -14,6 +14,14 @@
     --reset-text-color: #F472B6;
     --reset-hover-bg: #9F284C;
     --reset-hover-text: #FFFFFF;
+    
+    /* CORES PARA AS SEÇÕES DO PROMPT */
+    --color-persona: #38BDF8;
+    --color-resultado: #A78BFA;
+    --color-orquestracao: #FACC15;
+    --color-mensagem: #60A5FA;
+    --color-perimetro: #F472B6;
+    --color-tom: #4ADE80;
 }
 
 body {
@@ -70,7 +78,9 @@ header h1 {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    height: 78vh;
+    height: 80vh;
+    position: sticky;
+    top: 1rem;
 }
 
 h2 {
@@ -142,12 +152,25 @@ pre#final-prompt {
     border-radius: 8px;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+    word-break: break-all;
     height: 100%;
     overflow-y: auto;
     font-size: 0.95rem;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
+    line-height: 1.7;
 }
+
+.prompt-section-title {
+    font-weight: 600;
+}
+
+.prompt-persona { color: var(--color-persona); }
+.prompt-resultado { color: var(--color-resultado); }
+.prompt-orquestracao { color: var(--color-orquestracao); }
+.prompt-mensagem { color: var(--color-mensagem); }
+.prompt-perimetro { color: var(--color-perimetro); }
+.prompt-tom { color: var(--color-tom); }
 
 #copy-button {
     border: none;
@@ -307,5 +330,10 @@ pre#final-prompt {
 @media (max-width: 900px) {
     .main-content {
         grid-template-columns: 1fr;
+    }
+
+    .preview-section {
+        height: 60vh;
+        position: static;
     }
 }

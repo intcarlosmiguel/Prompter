@@ -14,22 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let presets = initialPresets;
 
     // --- Funções de Gerenciamento de Presets ---
-    
     function renderAllPresets() {
         PRESET_FIELDS.forEach(field => {
             const select = document.querySelector(`.preset-controls[data-field="${field}"] .preset-select`);
             if (!select) return;
-
-            // Limpa opções antigas, exceto a primeira
-            while (select.options.length > 1) {
-                select.remove(1);
-            }
-
+            while (select.options.length > 1) { select.remove(1); }
             const fieldPresets = presets[field] || [];
             fieldPresets.forEach(preset => {
                 const option = document.createElement('option');
                 option.value = preset.id;
-                // Usa a primeira linha do valor como texto da opção
                 option.textContent = preset.value.split('\n')[0].substring(0, 70) + (preset.value.includes('\n') ? '...' : '');
                 select.appendChild(option);
             });
@@ -43,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`O campo "${field}" deve ser preenchido para salvar um preset.`);
             return;
         }
-
         try {
             const response = await fetch(`/save_preset/${field}`, {
                 method: 'POST',
@@ -69,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (!confirm('Tem certeza que deseja excluir o preset selecionado?')) return;
-
         try {
             const response = await fetch(`/delete_preset/${field}/${presetId}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Falha ao excluir.');
@@ -83,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyPreset(field, presetId) {
         const textarea = document.getElementById(field);
-        if (!presetId) { // Se "Carregar preset..." for selecionado
+        if (!presetId) {
             textarea.value = '';
             return;
         }
@@ -95,78 +86,128 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- Funções de Geração de Conteúdo ---
+    const escapeHtml = (unsafe) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
-    const getSectionContent = (id, title) => {
+    const getSectionContentHTML = (id, title, className) => {
         const el = document.getElementById(id);
         const value = el ? el.value.trim() : '';
-        return value ? `## ${title}\n${value}\n\n` : '';
+        if (!value) return '';
+        return `<span class="prompt-section-title prompt-${className}">## ${title}\n</span><span class="prompt-section-content">${escapeHtml(value)}\n\n</span>`;
     };
 
-    const getPersonaContent = () => {
+    const getPersonaContentHTML = () => {
         const template = document.getElementById('persona').dataset.template;
         const input1 = document.getElementById('persona-input-1').value.trim();
         const input2 = document.getElementById('persona-input-2').value.trim();
         if (input1 || input2) {
             const text = template.replace('{}', input1 || '[Especialidade]').replace('{}', input2 || '[Seu Papel]');
-            return `## 👤 PERSONA\n${text}\n\n`;
+            return `<span class="prompt-section-title prompt-persona">## 👤 PERSONA\n</span><span class="prompt-section-content">${escapeHtml(text)}\n\n</span>`;
         }
         return '';
     };
 
-    const getMessageContent = (truncate = false) => {
+    const getMessageContentHTML = () => {
         const checkedFiles = Array.from(document.querySelectorAll('input[name="context_files"]:checked'));
         if (checkedFiles.length === 0) return '';
-        let text = '## ✉️ MENSAGEM (CONTEXTO)\nConsidere o conteúdo dos seguintes arquivos:\n\n';
+        
+        let html = `<span class="prompt-section-title prompt-mensagem">## ✉️ MENSAGEM (CONTEXTO)\n</span>`;
+        html += `<span class="prompt-section-content">Considere o conteúdo dos seguintes arquivos:\n\n`;
+
         checkedFiles.forEach(cb => {
             const file = fileData.find(f => f.filename === cb.value);
             if (file) {
                 let content = file.content;
-                text += `--- INÍCIO DO ARQUIVO: ${file.filename} ---\n`;
-                text += (truncate && content.length > CHAR_LIMIT) 
+                html += `--- INÍCIO DO ARQUIVO: ${file.filename} ---\n`;
+                const displayContent = (content.length > CHAR_LIMIT) 
                     ? content.substring(0, CHAR_LIMIT) + `... (total de ${content.length} caracteres)\n` 
                     : content + '\n';
-                text += `--- FIM DO ARQUIVO: ${file.filename} ---\n\n`;
+                html += escapeHtml(displayContent);
+                html += `--- FIM DO ARQUIVO: ${file.filename} ---\n\n`;
             }
         });
-        return text;
+        html += `</span>`;
+        return html;
     };
     
-    const getOpeningContent = () => {
-        return addOpeningCheckbox.checked ? "Dando continuidade à nossa última interação, que foi excelente, por favor, me ajude com o seguinte:\n\n" : "";
+    const getOpeningContentHTML = () => {
+        return addOpeningCheckbox.checked ? `<span class="prompt-section-content">Dando continuidade à nossa última interação, que foi excelente, por favor, me ajude com o seguinte:\n\n</span>` : "";
     };
 
     // --- Funções Principais ---
-
+    
     function assemblePreview() {
-        let text = '';
-        text += getOpeningContent(); // MOVEMOS PARA O INÍCIO
-        text += getPersonaContent();
-        text += getSectionContent('resultado', '🎯 RESULTADO');
-        text += getSectionContent('orquestracao', '⚙️ ORQUESTRAÇÃO');
-        text += getMessageContent(true);
-        text += getSectionContent('perimetro', '🚧 PERÍMETRO (RESTRIÇÕES)');
-        text += getSectionContent('tom', '🎨 TOM');
-        finalPromptPre.textContent = text.trim() || 'Preencha ao menos um campo para gerar o prompt...';
+        let html = '';
+        html += getOpeningContentHTML();
+        html += getPersonaContentHTML();
+        html += getSectionContentHTML('resultado', '🎯 RESULTADO', 'resultado');
+        html += getSectionContentHTML('orquestracao', '⚙️ ORQUESTRAÇÃO', 'orquestracao');
+        html += getSectionContentHTML('perimetro', '🚧 PERÍMETRO (RESTRIÇÕES)', 'perimetro');
+        html += getSectionContentHTML('tom', '🎨 TOM', 'tom');
+        html += getMessageContentHTML();
+        
+        if (html.trim() === '') {
+            finalPromptPre.innerHTML = 'Preencha ao menos um campo para gerar o prompt...';
+        } else {
+            finalPromptPre.innerHTML = html.trim().replace(/\n\n/g, '\n').replace(/\n/g, '<br>');
+        }
     }
     
+    function assembleForCopying() {
+        const getSectionContentText = (id, title) => {
+            const el = document.getElementById(id);
+            const value = el ? el.value.trim() : '';
+            return value ? `## ${title}\n${value}\n\n` : '';
+        };
+
+        const getPersonaContentText = () => {
+            const template = document.getElementById('persona').dataset.template;
+            const input1 = document.getElementById('persona-input-1').value.trim();
+            const input2 = document.getElementById('persona-input-2').value.trim();
+            if (input1 || input2) {
+                return `## 👤 PERSONA\n${template.replace('{}', input1 || '[Especialidade]').replace('{}', input2 || '[Seu Papel]')}\n\n`;
+            }
+            return '';
+        };
+
+        const getOpeningContentText = () => {
+            return addOpeningCheckbox.checked ? "Dando continuidade à nossa última interação, que foi excelente, por favor, me ajude com o seguinte:\n\n" : "";
+        };
+
+        const getMessageContentText = () => {
+            const checkedFiles = Array.from(document.querySelectorAll('input[name="context_files"]:checked'));
+            if (checkedFiles.length === 0) return '';
+            let text = `## ✉️ MENSAGEM (CONTEXTO)\nConsidere o conteúdo dos seguintes arquivos:\n\n`;
+            checkedFiles.forEach(cb => {
+                const file = fileData.find(f => f.filename === cb.value);
+                if (file) {
+                    text += `--- INÍCIO DO ARQUIVO: ${file.filename} ---\n`;
+                    text += file.content + '\n';
+                    text += `--- FIM DO ARQUIVO: ${file.filename} ---\n\n`;
+                }
+            });
+            return text;
+        };
+
+        let text = '';
+        text += getOpeningContentText();
+        text += getPersonaContentText();
+        text += getSectionContentText('resultado', '🎯 RESULTADO');
+        text += getSectionContentText('orquestracao', '⚙️ ORQUESTRAÇÃO');
+        text += getSectionContentText('perimetro', '🚧 PERÍMETRO (RESTRIÇÕES)');
+        text += getSectionContentText('tom', '🎨 TOM');
+        text += getMessageContentText(); // Mensagem por último
+
+        return text.trim();
+    }
+
     function showToast() {
         toastNotification.classList.add('show');
         setTimeout(() => toastNotification.classList.remove('show'), 3000);
     }
 
     function copyToClipboard() {
-        let textToCopy = '';
-        textToCopy += getOpeningContent(); // MOVEMOS PARA O INÍCIO
-        textToCopy += getPersonaContent();
-        textToCopy += getSectionContent('resultado', '🎯 RESULTADO');
-        textToCopy += getSectionContent('orquestracao', '⚙️ ORQUESTRAÇÃO');
-        textToCopy += getSectionContent('perimetro', '🚧 PERÍMETRO (RESTRIÇÕES)');
-        textToCopy += getSectionContent('tom', '🎨 TOM');
-        textToCopy += getMessageContent(false);
-        textToCopy = textToCopy.trim();
-        
+        const textToCopy = assembleForCopying();
         if (!textToCopy) return;
-
         navigator.clipboard.writeText(textToCopy).then(showToast).catch(err => {
             console.error('Erro ao copiar: ', err);
             alert('Falha ao copiar o prompt.');
@@ -186,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
     copyButton.addEventListener('click', copyToClipboard);
     resetButton.addEventListener('click', resetForm);
 
-    // Event delegation para os controles de presets
     form.addEventListener('click', (e) => {
         const field = e.target.closest('.preset-controls')?.dataset.field;
         if (!field) return;
