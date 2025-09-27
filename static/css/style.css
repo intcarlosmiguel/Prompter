@@ -1,20 +1,19 @@
 /* static/css/style.css - Tema "Deep Focus" */
 :root {
-    /* PALETA DE CORES - TEMA ESCURO */
-    --background-color: #121826; /* Um azul noturno profundo, quase preto */
-    --card-background: #1C2438;   /* Uma superfície ligeiramente mais clara para os painéis */
-    --text-color: #E2E8F0;         /* Branco suave e legível com um toque de azul */
-    --light-text-color: #8D9BB0;   /* Cinza-azulado para texto secundário e placeholders */
-    --border-color: #2A3652;       /* Borda sutil para separar elementos */
-    --primary-action-bg: #38BDF8;  /* Azul ciano vibrante para ações primárias (Copiar) */
-    --primary-action-text: #0B1120;/* Texto escuro de alto contraste para o botão primário */
-    --save-action-bg: #10B981;     /* Verde para a ação de salvar */
-    --danger-action-bg: #F472B6;   /* Rosa/Magenta para a ação de perigo (Excluir) */
-    --accent-glow: rgba(56, 189, 248, 0.5); /* Efeito de brilho para inputs em foco */
-    --reset-border-color: #7E2D41;   /* Um vermelho escuro, cor de vinho, para a borda */
-    --reset-text-color: #F472B6;     /* O mesmo rosa/magenta, para consistência com os ícones de exclusão */
-    --reset-hover-bg: #9F284C;       /* Um vermelho mais sólido e vibrante para o hover */
-    --reset-hover-text: #FFFFFF;     /* Texto branco puro para o hover, para máximo contraste */
+    --background-color: #121826;
+    --card-background: #1C2438;
+    --text-color: #E2E8F0;
+    --light-text-color: #8D9BB0;
+    --border-color: #2A3652;
+    --primary-action-bg: #38BDF8;
+    --primary-action-text: #0B1120;
+    --save-action-bg: #10B981;
+    --danger-action-bg: #F472B6;
+    --accent-glow: rgba(56, 189, 248, 0.5);
+    --reset-border-color: #7E2D41;
+    --reset-text-color: #F472B6;
+    --reset-hover-bg: #9F284C;
+    --reset-hover-text: #FFFFFF;
 }
 
 body {
@@ -38,7 +37,7 @@ header {
 }
 
 header h1 {
-    color: #FFFFFF; /* Título principal em branco puro para destaque */
+    color: #FFFFFF;
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
@@ -55,18 +54,23 @@ header h1 {
     align-items: start;
 }
 
-.form-section, .preview-section {
+.form-section {
     background-color: var(--card-background);
     padding: 1.5rem;
-    border-radius: 12px; /* Bordas mais arredondadas para um visual mais moderno */
+    border-radius: 12px;
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); /* Sombra mais sutil para profundidade */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .preview-section {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    align-self: stretch;
+    height: 78vh;
 }
 
 h2 {
@@ -77,11 +81,24 @@ h2 {
     font-weight: 600;
 }
 
-.form-group { margin-bottom: 1.5rem; }
-.form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 1rem; }
-.help-text { font-size: 0.85rem; color: var(--light-text-color); margin: -0.25rem 0 0.75rem 0; }
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
-textarea.prompt-input, 
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    margin: -0.25rem 0 0.75rem 0;
+}
+
+textarea.prompt-input,
 .persona-inputs input.prompt-input,
 .preset-controls .preset-select {
     width: 100%;
@@ -95,15 +112,17 @@ textarea.prompt-input,
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-textarea.prompt-input { resize: vertical; }
+textarea.prompt-input {
+    resize: vertical;
+}
 
-textarea.prompt-input::placeholder, 
+textarea.prompt-input::placeholder,
 .persona-inputs input.prompt-input::placeholder {
     color: var(--light-text-color);
     opacity: 0.8;
 }
 
-textarea.prompt-input:focus, 
+textarea.prompt-input:focus,
 .persona-inputs input.prompt-input:focus,
 .preset-controls .preset-select:focus {
     outline: none;
@@ -111,10 +130,13 @@ textarea.prompt-input:focus,
     box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.prompt-preview-wrapper { flex-grow: 1; min-height: 0; }
+.prompt-preview-wrapper {
+    flex-grow: 1;
+    min-height: 0;
+}
 
 pre#final-prompt {
-    background-color: #000000; /* Preto puro para o máximo contraste do código/texto final */
+    background-color: #000000;
     color: #D1D5DB;
     padding: 1rem;
     border-radius: 8px;
@@ -127,9 +149,6 @@ pre#final-prompt {
     border: 1px solid var(--border-color);
 }
 
-/* --- Botões Reimaginados --- */
-
-/* Botão de Ação Primária */
 #copy-button {
     border: none;
     padding: 0.85rem 1.5rem;
@@ -143,14 +162,16 @@ pre#final-prompt {
     width: 100%;
     margin-top: 1rem;
 }
-#copy-button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
 
-/* Botão Secundário */
+#copy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
+}
+
 #reset-button {
     background-color: transparent;
-    color: var(--reset-text-color); /* Aplicando a cor do texto */
-    border: 1px solid var(--reset-border-color); /* Aplicando a cor da borda */
-    
+    color: var(--reset-text-color);
+    border: 1px solid var(--reset-border-color);
     width: 100%;
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
@@ -161,14 +182,20 @@ pre#final-prompt {
 }
 
 #reset-button:hover {
-    background-color: var(--reset-hover-bg); /* Aplicando o fundo no hover */
-    color: var(--reset-hover-text);          /* Aplicando a cor do texto no hover */
-    border-color: var(--reset-hover-bg);     /* Borda e fundo se tornam uma cor só */
+    background-color: var(--reset-hover-bg);
+    color: var(--reset-hover-text);
+    border-color: var(--reset-hover-bg);
 }
 
-/* --- Controles de Preset --- */
-.preset-controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
-.preset-controls .preset-select { flex-grow: 1; }
+.preset-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.preset-controls .preset-select {
+    flex-grow: 1;
+}
 
 .preset-controls button {
     padding: 0.5rem 1rem;
@@ -179,28 +206,83 @@ pre#final-prompt {
     color: var(--primary-action-text);
     transition: opacity 0.2s ease;
 }
-.preset-controls button:hover { opacity: 0.85; }
 
-.preset-controls .save-preset-btn { background-color: var(--save-action-bg); }
-.preset-controls .delete-preset-btn { background-color: var(--danger-action-bg); }
+.preset-controls button:hover {
+    opacity: 0.85;
+}
 
-/* --- Elementos Diversos --- */
-.persona-inputs { display: flex; align-items: center; gap: 0.75rem; }
-.persona-inputs span { font-style: italic; color: var(--light-text-color); }
-.file-selector { border: 1px dashed var(--border-color); border-radius: 8px; padding: 1rem; max-height: 200px; overflow-y: auto; background-color: rgba(0,0,0,0.1); }
-.file-checkbox { display: flex; align-items: center; margin-bottom: 0.5rem; }
-.file-checkbox input[type="checkbox"] { margin-right: 0.75rem; width: 16px; height: 16px; cursor: pointer; }
-.file-checkbox label { font-weight: normal; font-size: 0.95rem; cursor: pointer; }
-.no-files-msg { color: var(--light-text-color); font-style: italic; }
-.form-group-inline { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; }
-.form-group-inline input { margin: 0; }
-.form-group-inline label { margin: 0; font-weight: normal; }
+.preset-controls .save-preset-btn {
+    background-color: var(--save-action-bg);
+}
 
-/* --- Notificação Toast --- */
+.preset-controls .delete-preset-btn {
+    background-color: var(--danger-action-bg);
+}
+
+.persona-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.persona-inputs span {
+    font-style: italic;
+    color: var(--light-text-color);
+}
+
+.file-selector {
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.file-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.file-checkbox input[type="checkbox"] {
+    margin-right: 0.75rem;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.file-checkbox label {
+    font-weight: normal;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.no-files-msg {
+    color: var(--light-text-color);
+    font-style: italic;
+}
+
+.form-group-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.form-group-inline input {
+    margin: 0;
+}
+
+.form-group-inline label {
+    margin: 0;
+    font-weight: normal;
+}
+
 .toast {
     visibility: hidden;
     min-width: 250px;
-    background-color: #2A3652; /* Fundo alinhado com o tema */
+    background-color: #2A3652;
     color: var(--text-color);
     text-align: center;
     border-radius: 8px;
@@ -211,13 +293,19 @@ pre#final-prompt {
     transform: translateX(-50%);
     bottom: 30px;
     opacity: 0;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
     transition: opacity 0.5s, visibility 0.5s, transform 0.5s;
 }
-.toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-10px); }
 
-/* --- Responsividade --- */
+.toast.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+}
+
 @media (max-width: 900px) {
-    .main-content { grid-template-columns: 1fr; }
+    .main-content {
+        grid-template-columns: 1fr;
+    }
 }
