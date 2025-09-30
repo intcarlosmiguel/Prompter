@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Constantes e Estado ---
     const CHAR_LIMIT = 250;
     const PRESET_FIELDS = ['resultado', 'orquestracao', 'perimetro', 'tom'];
+    const PERSISTENT_FIELDS = [
+        'persona-input-1', 'persona-input-2', 'resultado',
+        'orquestracao', 'perimetro', 'tom', 'add-opening-checkbox'
+    ];
     let presets = initialPresets;
 
     // --- Funções de Gerenciamento de Presets ---
@@ -18,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         PRESET_FIELDS.forEach(field => {
             const select = document.querySelector(`.preset-controls[data-field="${field}"] .preset-select`);
             if (!select) return;
+            const currentSelection = select.value;
             while (select.options.length > 1) { select.remove(1); }
             const fieldPresets = presets[field] || [];
             fieldPresets.forEach(preset => {
@@ -26,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.textContent = preset.value.split('\n')[0].substring(0, 70) + (preset.value.includes('\n') ? '...' : '');
                 select.appendChild(option);
             });
+            select.value = currentSelection;
         });
     }
 
@@ -46,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPreset = await response.json();
             presets[field].unshift(newPreset);
             renderAllPresets();
+            document.querySelector(`.preset-controls[data-field="${field}"] .preset-select`).value = newPreset.id;
             alert(`Preset para "${field}" salvo com sucesso!`);
         } catch (error) {
             console.error('Erro:', error);
@@ -66,6 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Falha ao excluir.');
             presets[field] = presets[field].filter(p => p.id != presetId);
             renderAllPresets();
+            const textarea = document.getElementById(field);
+            textarea.value = '';
+            localStorage.removeItem(field);
+            assemblePreview();
         } catch (error) {
             console.error('Erro:', error);
             alert(`Não foi possível excluir o preset para "${field}".`);
@@ -76,13 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const textarea = document.getElementById(field);
         if (!presetId) {
             textarea.value = '';
-            return;
+        } else {
+            const preset = presets[field].find(p => p.id == presetId);
+            if (preset) {
+                textarea.value = preset.value;
+            }
         }
-        const preset = presets[field].find(p => p.id == presetId);
-        if (preset) {
-            textarea.value = preset.value;
-        }
-        assemblePreview();
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
     }
     
     // --- Funções de Geração de Conteúdo ---
@@ -195,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         text += getSectionContentText('orquestracao', '⚙️ ORQUESTRAÇÃO');
         text += getSectionContentText('perimetro', '🚧 PERÍMETRO (RESTRIÇÕES)');
         text += getSectionContentText('tom', '🎨 TOM');
-        text += getMessageContentText(); // Mensagem por último
+        text += getMessageContentText();
 
         return text.trim();
     }
@@ -216,14 +227,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetForm() {
         form.reset();
-        document.getElementById('persona-input-1').value = '';
-        document.getElementById('persona-input-2').value = '';
         document.querySelectorAll('.preset-select').forEach(select => select.value = '');
+        PERSISTENT_FIELDS.forEach(id => localStorage.removeItem(id));
         assemblePreview();
     }
 
-    // --- Event Listeners e Inicialização ---
-    form.addEventListener('input', assemblePreview);
+    // --- PERSISTÊNCIA E ATUALIZAÇÃO EM TEMPO REAL ---
+
+    function loadFromPersistence() {
+        PERSISTENT_FIELDS.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                const savedValue = localStorage.getItem(id);
+                if (savedValue !== null) {
+                    el.type === 'checkbox' ? (el.checked = savedValue === 'true') : (el.value = savedValue);
+                }
+            }
+        });
+    }
+
+    function updateFileSelector(files) {
+        const container = document.getElementById('file-selector-container');
+        if (!container) {
+            console.error('Elemento "file-selector-container" não encontrado no DOM.');
+            return;
+        }
+
+        const checkedFiles = new Set(
+            Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value)
+        );
+        
+        container.innerHTML = ''; 
+
+        if (files.length === 0) {
+            container.innerHTML = '<p class="no-files-msg">Nenhum arquivo encontrado na pasta <code>/files</code>.</p>';
+        } else {
+            files.forEach((file, index) => {
+                const isChecked = checkedFiles.has(file.filename) ? 'checked' : '';
+                const fileId = `file-auto-${index}`; // Usar prefixo para evitar conflitos
+                const checkboxHTML = `
+                    <div class="file-checkbox">
+                        <input type="checkbox" id="${fileId}" name="context_files" value="${file.filename}" class="prompt-input" ${isChecked}>
+                        <label for="${fileId}">${escapeHtml(file.filename)}</label>
+                    </div>`;
+                container.insertAdjacentHTML('beforeend', checkboxHTML);
+            });
+        }
+    }
+
+    function connectToFileStream() {
+        console.log('[SSE] Iniciando conexão com o stream de arquivos...');
+        const eventSource = new EventSource('/stream-files');
+        
+        eventSource.onopen = () => {
+            console.log('[SSE] Conexão estabelecida com sucesso.');
+        };
+
+        eventSource.onmessage = (event) => {
+            console.log('[SSE] Mensagem recebida do servidor.');
+            try {
+                const newFiles = JSON.parse(event.data);
+                // Atualiza a variável global de dados de arquivo
+                window.fileData = newFiles; 
+                // Redesenha a lista de arquivos na tela
+                updateFileSelector(newFiles); 
+                // Atualiza o preview, pois um arquivo selecionado pode ter sido alterado
+                assemblePreview(); 
+                console.log('[SSE] Interface de arquivos atualizada com sucesso.');
+            } catch (e) {
+                console.error('[SSE] Falha ao processar os dados recebidos:', e);
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            console.error('[SSE] Erro na conexão com o servidor. A conexão será fechada.', err);
+            // O navegador tentará reconectar automaticamente, mas fechamos aqui para evitar loops de erro em alguns casos
+            eventSource.close();
+        };
+    }
+
+    // --- EVENT LISTENERS E INICIALIZAÇÃO ---
+    
+    form.addEventListener('input', (e) => {
+        if (PERSISTENT_FIELDS.includes(e.target.id)) {
+            const el = e.target;
+            const value = el.type === 'checkbox' ? el.checked : el.value;
+            localStorage.setItem(el.id, value);
+        }
+        assemblePreview();
+    });
+
     copyButton.addEventListener('click', copyToClipboard);
     resetButton.addEventListener('click', resetForm);
 
@@ -240,7 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
             applyPreset(field, e.target.value);
         }
     });
-    
+
+    // --- EXECUÇÃO INICIAL ---
+    loadFromPersistence();
     renderAllPresets();
     assemblePreview();
+    connectToFileStream();
 });

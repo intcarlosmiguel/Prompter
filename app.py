@@ -2,7 +2,7 @@
 import os
 import json
 import time
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FILES_DIR = os.path.join(BASE_DIR, 'files')
 PRESETS_FILE = os.path.join(BASE_DIR, 'ropt_presets.json')
-ALLOWED_EXTENSIONS = {'.txt', '.py', '.md', '.json', '.html', '.css', '.js'}
+ALLOWED_EXTENSIONS = {'.txt', '.py', '.md', '.json', '.html', '.css', '.js',".c",".h"}
 PRESET_FIELDS = ['resultado', 'orquestracao', 'perimetro', 'tom']
 
 # --- Funções de Suporte ---
@@ -19,7 +19,7 @@ def get_context_files():
     """Lê o diretório 'files' e retorna uma lista de arquivos com seu conteúdo."""
     files_data = []
     if not os.path.isdir(FILES_DIR): return files_data
-    for filename in os.listdir(FILES_DIR):
+    for filename in sorted(os.listdir(FILES_DIR)): # Adicionado sorted para ordem consistente
         if any(filename.endswith(ext) for ext in ALLOWED_EXTENSIONS):
             filepath = os.path.join(FILES_DIR, filename)
             try:
@@ -65,6 +65,28 @@ def home():
     context_files = get_context_files()
     ropt_presets = load_presets()
     return render_template('index.html', structure=prompt_structure, files=context_files, presets=ropt_presets)
+
+# --- NOVA ROTA PARA ATUALIZAÇÃO DE ARQUIVOS EM TEMPO REAL (SSE) ---
+@app.route('/stream-files')
+def stream_files():
+    """Monitora a pasta de arquivos e envia atualizações para o cliente via SSE."""
+    def event_stream():
+        last_state = None
+        while True:
+            current_files = get_context_files()
+            # Usamos uma representação JSON para comparar o estado
+            current_state = json.dumps(current_files, sort_keys=True)
+            
+            if current_state != last_state:
+                last_state = current_state
+                # O formato "data: ...\n\n" é exigido pelo protocolo SSE
+                yield f"data: {last_state}\n\n"
+            
+            time.sleep(2) # Verifica por mudanças a cada 2 segundos
+            
+    # Retorna uma resposta com um tipo especial para indicar que é um stream de eventos
+    return Response(event_stream(), mimetype='text/event-stream')
+
 
 # --- Rotas da API de Presets Granulares ---
 

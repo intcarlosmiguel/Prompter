@@ -1,2 +1,6 @@
+# Ignora todo o conteúdo dentro da pasta 'files'
 files/*
+
+# Mas NÃO ignora o arquivo .gitkeep dentro dela
+!files/.gitkeep
 venv/
