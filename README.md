@@ -107,12 +107,3 @@ A grande conclusão deste trabalho é que a qualidade da interação com modelos
 
 Esta ferramenta serve como uma prova de conceito funcional, demonstrando como uma simples aplicação web pode transformar a "arte" de criar prompts em uma **disciplina de engenharia replicável**, economizando tempo e aumentando a produtividade de desenvolvedores, criadores de conteúdo e qualquer pessoa que utilize IA em seu dia a dia.
 
----
-
-### Dicas Adicionais para Você (de especialista para iniciante):
-
-1.  **Adicione um Screenshot:** A parte `<!-- Adicione aqui um screenshot... -->` é um lembrete. Uma imagem vale mais que mil palavras. Tire um print da sua aplicação funcionando e adicione ao `README`. Isso aumenta muito o engajamento.
-2.  **Considere um GIF:** Para mostrar a interatividade (como a pré-visualização em tempo real e o sistema de presets), um GIF curto é ainda mais poderoso.
-3.  **Licença:** É uma boa prática adicionar uma seção de Licença no final (por exemplo, `## 📜 Licença` e `Este projeto está sob a licença MIT.`). Isso diz aos outros como eles podem usar seu código.
-
-Parabéns pelo excelente trabalho! É um projeto muito relevante e bem executado. Se tiver mais alguma dúvida, estou à disposição.
